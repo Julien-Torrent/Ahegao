@@ -1,0 +1,15 @@
+version: '3.4'
+
+services:
+  ahegao:
+    image: ${DOCKER_REGISTRY-}ahegao
+    build:
+      context: .
+      dockerfile: Ahegao/Dockerfile
+    volumes:
+      - //G/Hentai:/app/downloads/
+
+networks:
+  default:
+    external:
+      name: login
