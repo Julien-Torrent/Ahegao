@@ -38,7 +38,7 @@ namespace Ahegao.Models
         {
             var html = new StringBuilder("<html><body>");
 
-            var files = Directory.GetFiles(_subfolder,"*.*").Where(x => x.EndsWith(".png") | x.EndsWith(".jpg")).Select(f => f.Split('/').Last()).ToArray();
+            var files = Directory.GetFiles(_subfolder,"*.*").Where(x => x.EndsWith(".png") | x.EndsWith(".jpg")).Select(f => f.Split(Path.DirectorySeparatorChar).Last()).ToArray();
 
             foreach (var file in files.OrderBy(z => int.Parse(z.Split(".").First())))
             {
