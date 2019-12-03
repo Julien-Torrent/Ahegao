@@ -1,6 +1,5 @@
 ﻿using Ahegao.Data;
 using Ahegao.Models;
-using Ahegao.SitesParsers;
 using Ahegao.SitesParsers.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,17 +16,19 @@ namespace Ahegao.Controllers
         static readonly HttpClient client = new HttpClient();
 
         private readonly ILogger<HomeController> _logger;
+        private readonly SiteContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, SiteContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public async Task<IActionResult> Index()
         {
             return View(new SiteViewModel()
             {
-                Sites = await new SiteContext().GetAllAsync()
+                Sites = await _context.GetAllAsync()
             }); 
         }
 
@@ -36,12 +37,11 @@ namespace Ahegao.Controllers
         {
             if (ModelState.IsValid)
             {
-                model.Sites = await new SiteContext().GetAllAsync();
+                model.Sites = await _context.GetAllAsync();
 
                 try
                 {
-                    var context = new SiteContext();
-                    var siteType = context.IdToType(model.SiteId);
+                    var siteType = _context.IdToType(model.SiteId);
 
                     var site = (ISite)Activator.CreateInstance(siteType);
 

@@ -11,9 +11,8 @@ namespace Ahegao.Data
     {
         public DbSet<Site> Sites { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer(@"Server=sql_login;Database=Ahegao;User ID=SA;Password=<YourNewStrong!Passw0rd>;Integrated Security=False");
+        public SiteContext(DbContextOptions<SiteContext> options) : base(options)
+        { 
         }
 
         public async Task<List<Site>> GetAllAsync()
