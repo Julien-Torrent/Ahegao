@@ -20,7 +20,21 @@ namespace Ahegao
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<SiteContext>(options => options.UseSqlServer(Configuration.GetValue<string>("ConnectionString")));
+            // Add the corresponding data provider depending on the configuration
+            var connection = Configuration.GetValue<string>("ConnectionString");
+            switch (Configuration.GetValue<string>("SQLProvider").ToLower())
+            {
+                case "sqlserver":
+                    services.AddDbContext<SiteContext>(options => options.UseSqlServer(connection));
+                    break;
+                case "mysql":
+                    services.AddDbContext<SiteContext>(options => options.UseMySql(connection));
+                    break;
+                case "sqlite":
+                    services.AddDbContext<SiteContext>(options => options.UseSqlite(connection));
+                    break;
+            }
+
             services.AddControllersWithViews();
         }
 

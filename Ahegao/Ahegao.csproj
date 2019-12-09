@@ -8,11 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="0.14.0-alpha-784" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0-preview1.19506.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0-preview1.19506.2" />
+    <PackageReference Include="AngleSharp" Version="0.14.0-alpha-788" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.9.5" />
-    <PackageReference Include="PDF.Core" Version="2019.7.0" />
+    <PackageReference Include="PDF.Core" Version="2019.8.9" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.1.0-rc1.final" />
   </ItemGroup>
 
 </Project>
