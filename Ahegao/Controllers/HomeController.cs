@@ -52,7 +52,7 @@ namespace Ahegao.Controllers
                     var parser = genericParser.MakeGenericType(new Type[]{ siteType });
                     var p = (IParser)Activator.CreateInstance(parser, new string[]{ response, model.ToDownload, model.Sites.Where(x => x.Id == model.SiteId).First().Name  });
 
-                    await p.DownloadImagesAsync();
+                    p.DownloadImages();
                     p.GeneratePdf();
                 }
                 catch (HttpRequestException e)

@@ -23,15 +23,15 @@ namespace Ahegao.Models
             _subfolder = $"downloads/{siteName}/{subfolder}";
         }
 
-        public async Task DownloadImagesAsync()
+        public void DownloadImages()
         {
-            foreach(var e in new T().GetPagesUrls(_document))
-            {
-                var image = await (await client.GetAsync(e)).Content.ReadAsByteArrayAsync();
+            Directory.CreateDirectory(_subfolder);
 
-                Directory.CreateDirectory(_subfolder);
-                await File.WriteAllBytesAsync($"{_subfolder}/{new T().RenameFile(e)}", image);
-            }
+            Parallel.ForEach(new T().GetPagesUrls(_document), async url =>
+            {
+                var image = await (await client.GetAsync(url)).Content.ReadAsByteArrayAsync();
+                await File.WriteAllBytesAsync($"{_subfolder}/{new T().RenameFile(url)}", image);
+            });
         }
 
         public async void GeneratePdf()
@@ -49,8 +49,7 @@ namespace Ahegao.Models
 
             await File.WriteAllTextAsync($"{_subfolder}/template.html", html.ToString());
 
-            var Renderer = new HtmlToPdf();
-            var PDF = await Renderer.RenderHTMLFileAsPdfAsync($"{_subfolder}/template.html");
+            var PDF = await new HtmlToPdf().RenderHTMLFileAsPdfAsync($"{_subfolder}/template.html");
             PDF.SaveAs($"{_subfolder}.pdf");
         }
     }

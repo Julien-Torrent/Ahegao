@@ -4,7 +4,7 @@ namespace Ahegao.SitesParsers.Interfaces
 {
     interface IParser
     {
-        public Task DownloadImagesAsync();
+        public void DownloadImages();
         public void GeneratePdf();
     }
 }
