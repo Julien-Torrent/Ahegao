@@ -54,7 +54,7 @@ html {
 body {
     /* Margin bottom by footer height */
     margin-bottom: 60px;
-    background-image: url('../img/background.jpeg');
+    background-image: url('../img/background.jpg');
 }
 .footer {
   position: absolute;
