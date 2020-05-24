@@ -1,6 +1,4 @@
-﻿using System.Threading.Tasks;
-
-namespace Ahegao.SitesParsers.Interfaces
+﻿namespace Ahegao.SitesParsers.Interfaces
 {
     interface IParser
     {

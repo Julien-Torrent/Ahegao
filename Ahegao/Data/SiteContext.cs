@@ -22,13 +22,13 @@ namespace Ahegao.Data
 
         public Type IdToType(int id)
         {
-            switch(id)
+            return id switch
             {
-                case 1: return typeof(Nhentai);
-                case 2: return typeof(Tsumino);
-                case 3: return typeof(Hentai2Read);
-                default: return typeof(Nhentai);
-            }
+                1 => typeof(Nhentai),
+                2 => typeof(Tsumino),
+                3 => typeof(Hentai2Read),
+                _ => typeof(Nhentai),
+            };
         }
     }
 }

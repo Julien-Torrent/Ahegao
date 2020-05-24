@@ -14,7 +14,7 @@ namespace Ahegao.SitesParsers
 
         public List<string> GetPagesUrls(IHtmlDocument document)
         {
-            return document.QuerySelectorAll(".gallerythumb > img").Select(x => x.GetAttribute("data-src")).Select(x => x.Remove(x.Length - 5, 1).Replace("/t", "/i")) .ToList();
+            return document.QuerySelectorAll(".gallerythumb > img").Select(x => x.GetAttribute("data-src")).Select(x => x.Remove(x.Length - 5, 1).Replace("/t", "/i")).ToList();
         }
 
         public string RenameFile(string filename)

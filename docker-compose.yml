@@ -6,10 +6,23 @@ services:
     build:
       context: .
       dockerfile: Ahegao/Dockerfile
+
     volumes:
-      - //G/Hentai:/app/downloads/
+      - G:\Hentai:/app/downloads/
+
+    labels:
+      - "traefik.http.routers.ahegao.rule=Host(`ahegao.docker.localhost`)"
+
+
+    networks:
+      - default
+      - login
 
 networks:
   default:
+    external:
+      name: gateway
+
+  login:
     external:
       name: login
