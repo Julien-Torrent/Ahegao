@@ -1,33 +1,35 @@
 ﻿using Ahegao.SitesParsers.Interfaces;
 using AngleSharp.Html.Dom;
-using AngleSharp.Html.Parser;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace Ahegao.SitesParsers
 {
-    // Problems with check not a bot
     public class Tsumino : ISite
     {
         public string GetDownloadUrl(string siteUrl, string album)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public async Task<List<string>> GetPagesUrls(string html)
-        {
-            IHtmlDocument document = await new HtmlParser().ParseDocumentAsync(html);
-            return new List<string>(); // _document.QuerySelectorAll(".gallerythumb > img").Select(x => x.GetAttribute("data-src")).ToList();
+            return siteUrl + album;
         }
 
         public List<string> GetPagesUrls(IHtmlDocument document)
         {
-            throw new System.NotImplementedException();
+            var url = document.QuerySelector("#image-container").GetAttribute("data-cdn");
+            var pagesCount = int.Parse(document.QuerySelector("h1").TextContent.Split(" ").Last());
+
+            var all = new List<string>();
+
+            for(int i = 1; i < pagesCount + 1; i++)
+            {
+                all.Add(url.Replace("[PAGE]", i.ToString()));
+            }
+
+            return all;
         }
 
         public string RenameFile(string filename)
         {
-            throw new System.NotImplementedException();
+            return filename.Split('/').Last().Split('?').First() + ".jpg";
         }
     }
 }
