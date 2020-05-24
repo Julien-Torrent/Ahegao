@@ -28,7 +28,7 @@ Currently the project supports the following database providers.
 * MySQL
 * SQLite
 
-Execute the script `Ahegao_database.sql` on your SQLServer.
+Execute the script `Ahegao_database.sql` on your database provider.
 Then change the `ConnectionString` and `SQLProvider` in `appsettings.json` according to your database configuration.
 
 ``` json
