@@ -2,6 +2,7 @@
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using IronPdf;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -23,18 +24,25 @@ namespace Ahegao.Models
             _subfolder = $"downloads/{siteName}/{subfolder}";
         }
 
-        public void DownloadImages()
+        public async Task DownloadImages()
         {
             Directory.CreateDirectory(_subfolder);
 
-            Parallel.ForEach(new T().GetPagesUrls(_document), async url =>
+            var tasks = new List<Task>();
+
+            foreach (var url in new T().GetPagesUrls(_document))
             {
-                var image = await (await client.GetAsync(url)).Content.ReadAsByteArrayAsync();
-                await File.WriteAllBytesAsync($"{_subfolder}/{new T().RenameFile(url)}", image);
-            });
+                tasks.Add(Task.Run(async () =>
+                {
+                    var image = await (await client.GetAsync(url)).Content.ReadAsByteArrayAsync();
+                    await File.WriteAllBytesAsync($"{_subfolder}/{new T().RenameFile(url)}", image);
+                }));
+            }
+
+            await Task.WhenAll(tasks);
         }
 
-        public async void GeneratePdf()
+        public async Task GeneratePdf()
         {
             var html = new StringBuilder("<html><body>");
 

@@ -50,10 +50,10 @@ namespace Ahegao.Controllers
 
                     var genericParser = Type.GetType("Ahegao.Models.HentaiParser`1");
                     var parser = genericParser.MakeGenericType(new Type[]{ siteType });
-                    var p = (IParser)Activator.CreateInstance(parser, new string[]{ response, model.ToDownload, model.Sites.Where(x => x.Id == model.SiteId).First().Name  });
+                    var p = (IParser)Activator.CreateInstance(parser, new string[]{ response, model.ToDownload, model.Sites.Where(x => x.Id == model.SiteId).First().Name });
 
-                    p.DownloadImages();
-                    p.GeneratePdf();
+                    await p.DownloadImages();
+                    await p.GeneratePdf();
                 }
                 catch (HttpRequestException e)
                 {

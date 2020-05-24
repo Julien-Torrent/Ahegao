@@ -1,8 +1,10 @@
-﻿namespace Ahegao.SitesParsers.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace Ahegao.SitesParsers.Interfaces
 {
     interface IParser
     {
-        public void DownloadImages();
-        public void GeneratePdf();
+        public Task DownloadImages();
+        public Task GeneratePdf();
     }
 }
