@@ -14,8 +14,11 @@ The hentai is downloaded in `.pdf` file format.
 Currently supported sites :
 
 * [Nhentai](https://nhentai.net)
-* [Tsumino](https://tsumino.com) (Not currently working because of captchas)
+* [Tsumino](https://tsumino.com)
 * [Hentai2read](https://hentai2read.com)
+
+This project is currently using [IronPdf](https://ironpdf.com/t3/) to generate the pdf from downloaded images, to use it you will need a valid licence.
+Currently looking to remove IronPdf in favor of a free pdf generator.
 
 ## Setup the database
 
