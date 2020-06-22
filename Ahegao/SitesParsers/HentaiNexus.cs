@@ -6,23 +6,24 @@ using System.Linq;
 
 namespace Ahegao.SitesParsers
 {
-    public class Tsumino : ISite
+    public class HentaiNexus : ISite
     {
         public string GetDownloadUrl(string siteUrl, string album)
         {
-            return siteUrl.AppendPathSegment(album);
+            return siteUrl.AppendPathSegments(album, "001");
         }
 
         public List<string> GetPagesUrls(IHtmlDocument document)
         {
-            var url = document.QuerySelector("#image-container").GetAttribute("data-cdn");
-            var pagesCount = int.Parse(document.QuerySelector("h1").TextContent.Split(" ").Last());
-
+            var urls = document.GetElementsByTagName("script").Where(x => x.TextContent.Contains("images.hentainexus.com")).FirstOrDefault();
             var all = new List<string>();
 
-            for(int i = 1; i < pagesCount + 1; i++)
+            foreach (string s in urls.TextContent.Split("\""))
             {
-                all.Add(url.Replace("[PAGE]", i.ToString()));
+                if (s.StartsWith("https:"))
+                {
+                    all.Add(s.Replace("\\", ""));
+                }
             }
 
             return all;
@@ -30,7 +31,7 @@ namespace Ahegao.SitesParsers
 
         public string RenameFile(string filename)
         {
-            return filename.Split('/').Last().Split('?').First() + ".jpg";
+            return filename.Split("/").Last();
         }
     }
 }
