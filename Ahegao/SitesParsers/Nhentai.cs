@@ -1,5 +1,6 @@
 ﻿using Ahegao.SitesParsers.Interfaces;
 using AngleSharp.Html.Dom;
+using Flurl;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,7 +10,7 @@ namespace Ahegao.SitesParsers
     {
         public string GetDownloadUrl(string siteUrl, string album)
         {
-            return siteUrl + album;
+            return siteUrl.AppendPathSegment(album);
         }
 
         public List<string> GetPagesUrls(IHtmlDocument document)
