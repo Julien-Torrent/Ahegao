@@ -27,6 +27,7 @@ namespace Ahegao.Data
                 1 => typeof(Nhentai),
                 2 => typeof(Tsumino),
                 3 => typeof(Hentai2Read),
+                4 => typeof(HentaiNexus),
                 _ => typeof(Nhentai),
             };
         }
