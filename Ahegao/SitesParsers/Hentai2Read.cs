@@ -22,10 +22,8 @@ namespace Ahegao.SitesParsers
             {
                 if (url.Split("/").Last()[0] == 'p')
                     urls.Add(url.Replace("p001", "p" + i.ToString("000")));
-                else if (url.Split("/").Last().StartsWith("ccdn"))
-                    urls.Add(url.Replace("ccdn0001", "ccdn" + i.ToString("0000")));
                 else
-                    urls.Add(url.Replace("hcdn0001", "hcdn" + i.ToString("0000")));
+                    urls.Add(url.Replace("0001", i.ToString("0000")));
             }
             return urls;
         }
