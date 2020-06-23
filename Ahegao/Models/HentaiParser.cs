@@ -1,4 +1,5 @@
-﻿using Ahegao.SitesParsers.Interfaces;
+﻿using Ahegao.Data;
+using Ahegao.SitesParsers.Interfaces;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
 using IronPdf;
@@ -19,8 +20,9 @@ namespace Ahegao.Models
     {
         private static readonly HttpClient client = new HttpClient();
 
-        private IHtmlDocument _document;
+        private readonly IHtmlDocument _document;
         private readonly string _subfolder;
+        private readonly FilesContext _filesContext;
 
         /// <summary>
         /// Create a new HentaiPaser from the page and store in sitename/subfolder
@@ -31,7 +33,8 @@ namespace Ahegao.Models
         public HentaiParser(string html, string subfolder, string siteName)
         {
             _document = new HtmlParser().ParseDocumentAsync(html).Result;
-            _subfolder = $"downloads/{siteName}/{subfolder}";
+            _subfolder = $"/app/downloads/{siteName}/{subfolder}";
+            _filesContext = new FilesContext(siteName);
         }
 
         public async Task DownloadImages()
@@ -67,6 +70,12 @@ namespace Ahegao.Models
 
             var PDF = await HtmlToPdf.StaticRenderHtmlAsPdfAsync(html.ToString(), _subfolder);
             PDF.SaveAs($"{_subfolder}.pdf");
+
+            // If not saved, mark the file as downloaded
+            if (!await _filesContext.IsDoujinDownloadedAsync(_subfolder.Split('/').Last()))
+            {
+                await _filesContext.AddDownloadedAsync(_subfolder.Split('/').Last());
+            }
         }
     }
 }

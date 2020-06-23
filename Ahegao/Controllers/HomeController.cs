@@ -7,6 +7,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Mime;
 using System.Threading.Tasks;
 
 namespace Ahegao.Controllers
@@ -38,6 +39,14 @@ namespace Ahegao.Controllers
             if (ModelState.IsValid)
             {
                 model.Sites = await _context.GetAllAsync();
+                model.ToDownload = model.ToDownload.Trim('/');
+                var siteName = model.Sites.Where(x => x.Id == model.SiteId).First().Name;
+
+                var filesContext = new FilesContext(siteName);
+                if(await filesContext.IsDoujinDownloadedAsync(model.ToDownload))
+                {
+                    return GetFileForDownload(siteName, model.ToDownload);
+                }
 
                 try
                 {
@@ -54,6 +63,8 @@ namespace Ahegao.Controllers
 
                     await p.DownloadImages();
                     await p.GeneratePdf();
+
+                    return GetFileForDownload(siteName, model.ToDownload);
                 }
                 catch (HttpRequestException e)
                 {
@@ -63,6 +74,18 @@ namespace Ahegao.Controllers
             }
 
             return View(model);
+        }
+
+        private FileContentResult GetFileForDownload(string siteName, string album)
+        {
+            ContentDisposition cd = new ContentDisposition
+            {
+                FileName = $"{album}.pdf",
+                Inline = false  // false = prompt the user for downloading;  true = browser to try to show the file inline
+            };
+            Response.Headers.Add("Content-Disposition", cd.ToString());
+
+            return File(System.IO.File.ReadAllBytes($"/app/downloads/{siteName}/{album}.pdf"), MediaTypeNames.Application.Pdf);
         }
 
         public IActionResult Privacy()
