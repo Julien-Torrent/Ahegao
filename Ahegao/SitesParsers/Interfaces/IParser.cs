@@ -15,6 +15,7 @@ namespace Ahegao.SitesParsers.Interfaces
 
         /// <summary>
         /// Generate the pdf from all the downloaded images
+        /// Marks the file as downloaded in the corresponding SQLite database
         /// </summary>
         /// <returns>An awaitable Task (void), when the PDF file has been generated and saved</returns>
         public Task GeneratePdf();

@@ -38,9 +38,10 @@ namespace Ahegao.Controllers
             if (ModelState.IsValid)
             {
                 model.Sites = await _context.GetAllAsync();
+                model.ToDownload = model.ToDownload.Trim('/');
 
                 var filesContext = new FilesContext(model.Sites.Where(x => x.Id == model.SiteId).First().Name);
-                if(await filesContext.IsDoujinDownloadedAsync(model.ToDownload.Trim('/')))
+                if(await filesContext.IsDoujinDownloadedAsync(model.ToDownload))
                 {
                     // TODO : download file to client
                     return View(model);
@@ -61,11 +62,6 @@ namespace Ahegao.Controllers
 
                     await p.DownloadImages();
                     await p.GeneratePdf();
-
-                    if (!await filesContext.IsDoujinDownloadedAsync(model.ToDownload.Trim('/')))
-                    {
-                        await filesContext.AddDownloadedAsync(model.ToDownload.Trim('/'));
-                    }
                 }
                 catch (HttpRequestException e)
                 {
