@@ -2,7 +2,9 @@
 using Ahegao.SitesParsers.Interfaces;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
-using IronPdf;
+using Syncfusion.Drawing;
+using Syncfusion.Pdf;
+using Syncfusion.Pdf.Graphics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -57,19 +59,28 @@ namespace Ahegao.Models
 
         public async Task GeneratePdf()
         {
-            var html = new StringBuilder("<html><body>");
+            var files = Directory.GetFiles(_subfolder,"*.*").Where(x => x.EndsWith(".png") | x.EndsWith(".jpg")).Select(f => f.Split(Path.DirectorySeparatorChar).Last()).ToList();
 
-            var files = Directory.GetFiles(_subfolder,"*.*").Where(x => x.EndsWith(".png") | x.EndsWith(".jpg")).Select(f => f.Split(Path.DirectorySeparatorChar).Last()).ToArray();
+            PdfDocument document = new PdfDocument();
 
             foreach (var file in files.OrderBy(z => int.Parse(z.Split(".").First())))
             {
-                html.Append($"<img width=\"100%\" src=\"{file.Split('/').Last()}\"/>");
+                // Add a page
+                PdfPage page = document.Pages.Add();
+
+                // Load the image from the disk.
+                using var img = new FileStream(Path.Combine(_subfolder, file), FileMode.Open, FileAccess.Read);
+                PdfBitmap image = new PdfBitmap(img);
+
+                // Draw the image with image bounds
+                SizeF pageSize = page.GetClientSize();
+                page.Graphics.DrawImage(image, new RectangleF(0, 0, pageSize.Width, pageSize.Height));
             }
 
-            html.Append("<body></html>");
-
-            var PDF = await HtmlToPdf.StaticRenderHtmlAsPdfAsync(html.ToString(), _subfolder);
-            PDF.SaveAs($"{_subfolder}.pdf");
+            // Save the document.
+            using var stream = new FileStream($"{_subfolder}.pdf", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            document.Save(stream);
+            document.Close(true);
 
             // If not saved, mark the file as downloaded
             if (!await _filesContext.IsDoujinDownloadedAsync(_subfolder.Split(Path.DirectorySeparatorChar).Last()))

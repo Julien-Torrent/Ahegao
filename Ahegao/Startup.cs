@@ -44,6 +44,9 @@ namespace Ahegao
         {
             Environment = env;
 
+            //Register Syncfusion license
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(Configuration.GetValue<string>("SyncfusionKey"));
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
