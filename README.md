@@ -16,9 +16,15 @@ Currently supported sites :
 * [Nhentai](https://nhentai.net)
 * [Tsumino](https://tsumino.com)
 * [Hentai2read](https://hentai2read.com)
+* [Hentainexus](https://hentainexus.com/)
 
-This project is currently using [IronPdf](https://ironpdf.com/t3/) to generate the pdf from downloaded images, to use it you will need a valid licence.
-Currently looking to remove IronPdf in favor of a free pdf generator.
+This project is currently using [Syncfusion](https://www.syncfusion.com/pdf-framework/net/) to generate the pdf from downloaded images, to use it you will need a valid licence key. The key is free for companies and individuals with less than $1 million USD in annual gross revenue and 5 or fewer developers.
+
+Just replace the `SyncfusionKey` in `appsettings.json`.
+
+``` json
+   "SyncfusionKey": "XXXXX"
+```
 
 ## Setup the database
 
