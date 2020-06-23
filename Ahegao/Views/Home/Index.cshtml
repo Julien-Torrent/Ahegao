@@ -30,7 +30,7 @@
 </div>
 
 <script>
-    $("#Id").change(function () {
+    document.getElementById("Id").addEventListener('change', function () {
         var site = "";
         switch (this.value) {
             @foreach(var elt in Model.Sites)
@@ -38,6 +38,6 @@
                 <text> case "@elt.Id": site = "@elt.Url"; break; </text>
             }
         }
-        $("#siteUrl").text(site);
+        document.getElementById("siteUrl").textContent = site;
     });
 </script>
