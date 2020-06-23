@@ -21,7 +21,7 @@ namespace Ahegao.Models
         public HentaiParser(string html, string subfolder, string siteName)
         {
             Task.Run(async () => _document = await new HtmlParser().ParseDocumentAsync(html)).Wait();
-            _subfolder = $"downloads/{siteName}/{subfolder}";
+            _subfolder = $"/app/downloads/{siteName}/{subfolder}";
         }
 
         public async Task DownloadImages()
@@ -55,9 +55,7 @@ namespace Ahegao.Models
 
             html.Append("<body></html>");
 
-            await File.WriteAllTextAsync($"{_subfolder}/template.html", html.ToString());
-
-            var PDF = await new HtmlToPdf().RenderHTMLFileAsPdfAsync($"{_subfolder}/template.html");
+            var PDF = await HtmlToPdf.StaticRenderHtmlAsPdfAsync(html.ToString(), _subfolder);
             PDF.SaveAs($"{_subfolder}.pdf");
         }
     }
