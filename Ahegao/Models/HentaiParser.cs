@@ -19,7 +19,7 @@ namespace Ahegao.Models
     {
         private static readonly HttpClient client = new HttpClient();
 
-        private IHtmlDocument _document;
+        private readonly IHtmlDocument _document;
         private readonly string _subfolder;
 
         /// <summary>
@@ -31,7 +31,7 @@ namespace Ahegao.Models
         public HentaiParser(string html, string subfolder, string siteName)
         {
             _document = new HtmlParser().ParseDocumentAsync(html).Result;
-            _subfolder = $"downloads/{siteName}/{subfolder}";
+            _subfolder = $"/app/downloads/{siteName}/{subfolder}";
         }
 
         public async Task DownloadImages()
