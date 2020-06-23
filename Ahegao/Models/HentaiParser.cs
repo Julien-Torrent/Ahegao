@@ -11,6 +11,10 @@ using System.Threading.Tasks;
 
 namespace Ahegao.Models
 {
+    /// <summary>
+    /// Implementation of IPaser, allow to download images and generate PDFs from various sites
+    /// </summary>
+    /// <typeparam name="T">ISite, with new() -> The methods corresponding to the Site to download from</typeparam>
     public class HentaiParser<T> : IParser where T : ISite, new()
     {
         private static readonly HttpClient client = new HttpClient();
@@ -18,6 +22,12 @@ namespace Ahegao.Models
         private IHtmlDocument _document;
         private readonly string _subfolder;
 
+        /// <summary>
+        /// Create a new HentaiPaser from the page and store in sitename/subfolder
+        /// </summary>
+        /// <param name="html">The downloaded page content as string</param>
+        /// <param name="subfolder">The name or number of the doujin to download</param>
+        /// <param name="siteName">Name of the site, comming from the Site Context</param>
         public HentaiParser(string html, string subfolder, string siteName)
         {
             _document = new HtmlParser().ParseDocumentAsync(html).Result;
