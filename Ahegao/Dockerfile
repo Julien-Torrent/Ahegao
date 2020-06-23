@@ -3,13 +3,6 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-RUN ["apt-get", "update"]
-RUN ["apt-get", "-y", "install", "libgdiplus"]
-RUN ["apt-get", "-y", "install", "xvfb", "libfontconfig", "wkhtmltopdf"]
-RUN ["apt-get", "-y", "install", "libc6-dev"]
-RUN ["apt-get", "-y", "install", "openssl"]
-RUN ["apt-get", "-y", "install", "libssl1.0"]
-
 FROM mcr.microsoft.com/dotnet/core/sdk:3.0-buster AS build
 WORKDIR /src
 COPY ["Ahegao/Ahegao.csproj", "Ahegao/"]
