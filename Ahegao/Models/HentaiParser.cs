@@ -30,11 +30,11 @@ namespace Ahegao.Models
         /// <param name="html">The downloaded page content as string</param>
         /// <param name="subfolder">The name or number of the doujin to download</param>
         /// <param name="siteName">Name of the site, comming from the Site Context</param>
-        public HentaiParser(string html, string subfolder, string siteName)
+        public HentaiParser(string html, string subfolder, string siteName, string basePath)
         {
             _document = new HtmlParser().ParseDocumentAsync(html).Result;
-            _subfolder = $"/app/downloads/{siteName}/{subfolder}";
-            _filesContext = new FilesContext(siteName);
+            _subfolder = Path.Combine(basePath, "downloads", siteName, subfolder);
+            _filesContext = new FilesContext(siteName, basePath);
         }
 
         public async Task DownloadImages()
@@ -72,9 +72,9 @@ namespace Ahegao.Models
             PDF.SaveAs($"{_subfolder}.pdf");
 
             // If not saved, mark the file as downloaded
-            if (!await _filesContext.IsDoujinDownloadedAsync(_subfolder.Split('/').Last()))
+            if (!await _filesContext.IsDoujinDownloadedAsync(_subfolder.Split(Path.DirectorySeparatorChar).Last()))
             {
-                await _filesContext.AddDownloadedAsync(_subfolder.Split('/').Last());
+                await _filesContext.AddDownloadedAsync(_subfolder.Split(Path.DirectorySeparatorChar).Last());
             }
         }
     }

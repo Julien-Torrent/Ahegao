@@ -15,6 +15,7 @@ namespace Ahegao
             Configuration = configuration;
         }
 
+        public IWebHostEnvironment Environment { get; private set; }
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -41,6 +42,8 @@ namespace Ahegao
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            Environment = env;
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

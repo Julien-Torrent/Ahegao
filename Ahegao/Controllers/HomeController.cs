@@ -1,10 +1,12 @@
 ﻿using Ahegao.Data;
 using Ahegao.Models;
 using Ahegao.SitesParsers.Interfaces;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Mime;
@@ -17,12 +19,14 @@ namespace Ahegao.Controllers
         static readonly HttpClient client = new HttpClient();
 
         private readonly ILogger<HomeController> _logger;
+        private readonly IWebHostEnvironment _environment;
         private readonly SiteContext _context;
 
-        public HomeController(ILogger<HomeController> logger, SiteContext context)
+        public HomeController(ILogger<HomeController> logger, SiteContext context, IWebHostEnvironment env)
         {
             _logger = logger;
             _context = context;
+            _environment = env;
         }
 
         public async Task<IActionResult> Index()
@@ -42,7 +46,7 @@ namespace Ahegao.Controllers
                 model.ToDownload = model.ToDownload.Trim('/');
                 var siteName = model.Sites.Where(x => x.Id == model.SiteId).First().Name;
 
-                var filesContext = new FilesContext(siteName);
+                var filesContext = new FilesContext(siteName, _environment.ContentRootPath);
                 if(await filesContext.IsDoujinDownloadedAsync(model.ToDownload))
                 {
                     return GetFileForDownload(siteName, model.ToDownload);
@@ -59,7 +63,13 @@ namespace Ahegao.Controllers
 
                     var genericParser = Type.GetType("Ahegao.Models.HentaiParser`1");
                     var parser = genericParser.MakeGenericType(new Type[]{ siteType });
-                    var p = (IParser)Activator.CreateInstance(parser, new string[]{ response, model.ToDownload, model.Sites.Where(x => x.Id == model.SiteId).First().Name });
+                    var p = (IParser)Activator.CreateInstance(parser, new string[]
+                    { 
+                        response, 
+                        model.ToDownload, 
+                        model.Sites.Where(x => x.Id == model.SiteId).First().Name, 
+                        _environment.ContentRootPath 
+                    });
 
                     await p.DownloadImages();
                     await p.GeneratePdf();
@@ -85,7 +95,8 @@ namespace Ahegao.Controllers
             };
             Response.Headers.Add("Content-Disposition", cd.ToString());
 
-            return File(System.IO.File.ReadAllBytes($"/app/downloads/{siteName}/{album}.pdf"), MediaTypeNames.Application.Pdf);
+            var filepath = Path.Combine(_environment.ContentRootPath, "downloads", siteName, $"{album}.pdf");
+            return File(System.IO.File.ReadAllBytes(filepath), MediaTypeNames.Application.Pdf);
         }
 
         public IActionResult Privacy()

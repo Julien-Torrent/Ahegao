@@ -1,5 +1,6 @@
 ﻿using Ahegao.Data.Models;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Ahegao.Data
@@ -15,12 +16,16 @@ namespace Ahegao.Data
         public DbSet<Doujin> Downloaded { get; set; }
 
         /// <summary>
-        /// Create a new Context, with a database named files.db in /app/downloads/siteName
+        /// Create a new Context, with a database named files.db in {basepath}/downloads/{siteName}/files.db
         /// </summary>
         /// <param name="siteName">Name of the site for the database</param>
-        public FilesContext(string siteName)
+        public FilesContext(string siteName, string basePath)
         {
-            _databasePath = $"/app/downloads/{siteName}/files.db";
+            _databasePath = Path.Combine(basePath, "downloads", siteName, "files.db");
+            if(!Directory.Exists(Path.Combine(basePath, "downloads", siteName)))
+            {
+                Directory.CreateDirectory(Path.Combine(basePath, "downloads", siteName));
+            }
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
