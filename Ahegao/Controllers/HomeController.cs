@@ -16,7 +16,7 @@ namespace Ahegao.Controllers
 {
     public class HomeController : Controller
     {
-        static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient client = new HttpClient();
 
         private readonly ILogger<HomeController> _logger;
         private readonly IWebHostEnvironment _environment;
@@ -47,9 +47,9 @@ namespace Ahegao.Controllers
                 var siteName = model.Sites.Where(x => x.Id == model.SiteId).First().Name;
 
                 var filesContext = new FilesContext(siteName, _environment.ContentRootPath);
-                if(await filesContext.IsDoujinDownloadedAsync(model.ToDownload))
+                if (!await filesContext.AddDownloadingAsync(model.ToDownload))
                 {
-                    return GetFileForDownload(siteName, model.ToDownload);
+                    return await GetFileForDownload(siteName, model.ToDownload);
                 }
 
                 try
@@ -66,15 +66,15 @@ namespace Ahegao.Controllers
                     var p = (IParser)Activator.CreateInstance(parser, new string[]
                     { 
                         response, 
-                        model.ToDownload, 
-                        model.Sites.Where(x => x.Id == model.SiteId).First().Name, 
+                        model.ToDownload,
+                        siteName,
                         _environment.ContentRootPath 
                     });
 
                     await p.DownloadImages();
                     await p.GeneratePdf();
 
-                    return GetFileForDownload(siteName, model.ToDownload);
+                    return await GetFileForDownload(siteName, model.ToDownload);
                 }
                 catch (HttpRequestException e)
                 {
@@ -86,8 +86,11 @@ namespace Ahegao.Controllers
             return View(model);
         }
 
-        private FileContentResult GetFileForDownload(string siteName, string album)
+        private async Task<FileContentResult> GetFileForDownload(string siteName, string album)
         {
+            var filesContext = new FilesContext(siteName, _environment.ContentRootPath);
+            while (!await filesContext.IsDoujinDownloadedAsync(album)) await Task.Delay(500);
+
             ContentDisposition cd = new ContentDisposition
             {
                 FileName = $"{album}.pdf",

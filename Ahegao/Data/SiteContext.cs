@@ -12,7 +12,7 @@ namespace Ahegao.Data
     /// </summary>
     public class SiteContext : DbContext
     {
-        public DbSet<Site> Sites { get; set; }
+        private DbSet<Site> Sites { get; set; }
 
         public SiteContext(DbContextOptions<SiteContext> options) : base(options) { }
 
@@ -20,7 +20,7 @@ namespace Ahegao.Data
         /// Get all the sites from the database asynchronously
         /// </summary>
         /// <returns>The list of retieved sites</returns>
-        public async Task<List<Site>> GetAllAsync()
+        public async Task<IList<Site>> GetAllAsync()
         {
             return await Sites.ToListAsync();
         }

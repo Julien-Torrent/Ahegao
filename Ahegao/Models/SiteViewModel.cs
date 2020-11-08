@@ -4,7 +4,7 @@ namespace Ahegao.Models
 {
     public class SiteViewModel
     {
-        public List<Site> Sites { get; set; }
+        public IList<Site> Sites { get; set; }
         public string ToDownload { get; set; }
         public int SiteId { get; set; }
     }

@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Ahegao.Models
@@ -24,6 +23,7 @@ namespace Ahegao.Models
 
         private readonly IHtmlDocument _document;
         private readonly string _subfolder;
+        private readonly string _albumName;
         private readonly FilesContext _filesContext;
 
         /// <summary>
@@ -34,6 +34,7 @@ namespace Ahegao.Models
         /// <param name="siteName">Name of the site, comming from the Site Context</param>
         public HentaiParser(string html, string subfolder, string siteName, string basePath)
         {
+            _albumName = subfolder;
             _document = new HtmlParser().ParseDocumentAsync(html).Result;
             _subfolder = Path.Combine(basePath, "downloads", siteName, subfolder);
             _filesContext = new FilesContext(siteName, basePath);
@@ -59,16 +60,16 @@ namespace Ahegao.Models
 
         public async Task GeneratePdf()
         {
-            var files = Directory.GetFiles(_subfolder,"*.*").Where(x => x.EndsWith(".png") | x.EndsWith(".jpg")).Select(f => f.Split(Path.DirectorySeparatorChar).Last()).ToList();
-
+            using var stream = new FileStream($"{_subfolder}.pdf", FileMode.OpenOrCreate, FileAccess.ReadWrite);
             PdfDocument document = new PdfDocument();
 
+            var files = Directory.GetFiles(_subfolder, "*.*").Select(f => f.Split(Path.DirectorySeparatorChar).Last()).ToList();
             foreach (var file in files.OrderBy(z => int.Parse(z.Split(".").First())))
             {
                 // Add a page
                 PdfPage page = document.Pages.Add();
 
-                // Load the image from the disk.
+                // Load the image from the disk
                 using var img = new FileStream(Path.Combine(_subfolder, file), FileMode.Open, FileAccess.Read);
                 PdfBitmap image = new PdfBitmap(img);
 
@@ -77,16 +78,13 @@ namespace Ahegao.Models
                 page.Graphics.DrawImage(image, new RectangleF(0, 0, pageSize.Width, pageSize.Height));
             }
 
-            // Save the document.
-            using var stream = new FileStream($"{_subfolder}.pdf", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+            // Save the document
             document.Save(stream);
             document.Close(true);
 
-            // If not saved, mark the file as downloaded
-            if (!await _filesContext.IsDoujinDownloadedAsync(_subfolder.Split(Path.DirectorySeparatorChar).Last()))
-            {
-                await _filesContext.AddDownloadedAsync(_subfolder.Split(Path.DirectorySeparatorChar).Last());
-            }
+            // Mark the file as downloaded & remove the download folder
+            await _filesContext.AddDownloadedAsync(_albumName);
+            Directory.Delete(_subfolder, true);
         }
     }
 }
