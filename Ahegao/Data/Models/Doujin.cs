@@ -7,6 +7,8 @@ namespace Ahegao.Data.Models
     /// </summary>
     public class Doujin
     {
+        public enum States { Downloading, Downloaded, Error }
+
         /// <summary>
         /// Id for database storage
         /// </summary>
@@ -17,5 +19,10 @@ namespace Ahegao.Data.Models
         /// Name of the downloaded doujin
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// State of the download
+        /// </summary>
+        public States State { get; set; }
     }
 }

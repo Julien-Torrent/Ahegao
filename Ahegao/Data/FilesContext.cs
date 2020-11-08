@@ -1,6 +1,7 @@
 ﻿using Ahegao.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Ahegao.Data
@@ -13,7 +14,7 @@ namespace Ahegao.Data
     {
         private readonly string _databasePath;
 
-        public DbSet<Doujin> Downloaded { get; set; }
+        private DbSet<Doujin> Doujins { get; set; }
 
         /// <summary>
         /// Create a new Context, with a database named files.db in {basepath}/downloads/{siteName}/files.db
@@ -26,10 +27,17 @@ namespace Ahegao.Data
             {
                 Directory.CreateDirectory(Path.Combine(basePath, "downloads", siteName));
             }
+            Database.EnsureCreated();
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Doujin>().HasIndex(s => s.Name).IsUnique();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            base.OnConfiguring(optionsBuilder);
             optionsBuilder.UseSqlite($"Data Source={_databasePath}");
         }
 
@@ -40,9 +48,24 @@ namespace Ahegao.Data
         /// <returns>True if already downloaded, then you need to check for name.pdf</returns>
         public async Task<bool> IsDoujinDownloadedAsync(string name)
         {
-            await Database.EnsureCreatedAsync();
-            return await Downloaded.AnyAsync(x => x.Name == name);
+            return await Doujins.AnyAsync(x => x.Name == name && x.State == Doujin.States.Downloaded);
         }
+
+        public async Task<bool> AddDownloadingAsync(string name)
+        {
+            await Doujins.AddAsync(new Doujin() { Name = name, State = Doujin.States.Downloading });
+
+            try
+            {
+                await SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+        }
+
 
         /// <summary>
         /// Mark the name as downloaded doujin, for the current SiteName
@@ -51,10 +74,9 @@ namespace Ahegao.Data
         /// <returns>Awaitable Task, returns when inserted</returns>
         public async Task AddDownloadedAsync(string name)
         {
-            await Downloaded.AddAsync(new Doujin()
-            {
-                Name = name
-            });
+            var doujin = await Doujins.Where(x => x.Name == name).FirstAsync();
+            doujin.State = Doujin.States.Downloaded;
+            Doujins.Update(doujin);
             await SaveChangesAsync();
         }
     }
